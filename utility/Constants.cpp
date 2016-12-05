@@ -34,39 +34,31 @@ const int bad_index = -1;
 CONSTANT_STRING(ms_unit,"ms");
 
 // Properties
-CONSTANT_STRING(polarity_reversed_property_name,"polarityReversed");
-
-CONSTANT_STRING(channels_enabled_property_name,"channelsEnabled");
+CONSTANT_STRING(states_property_name,"states");
+const long states_array_default[STATE_COUNT] = {0};
 
 // Parameters
 CONSTANT_STRING(channel_parameter_name,"channel");
 
 CONSTANT_STRING(channels_parameter_name,"channels");
 
-CONSTANT_STRING(polarity_parameter_name,"polarity");
-CONSTANT_STRING(polarity_positive,"+");
-CONSTANT_STRING(polarity_negative,"-");
-modular_server::SubsetMemberType polarity_ptr_subset[POLARITY_SUBSET_LENGTH] =
-  {
-    {.cs_ptr=&polarity_positive},
-    {.cs_ptr=&polarity_negative},
-  };
+CONSTANT_STRING(state_parameter_name,"state");
 
 CONSTANT_STRING(delay_parameter_name,"delay");
 const long delay_min = 0;
-const long delay_max = 1000000;
+const long delay_max = 2000000000;
 
 CONSTANT_STRING(period_parameter_name,"period");
 const long period_min = 2;
-const long period_max = 1000000;
+const long period_max = 2000000000;
 
 CONSTANT_STRING(on_duration_parameter_name,"on_duration");
 const long on_duration_min = 1;
-const long on_duration_max = 1000000;
+const long on_duration_max = 2000000000;
 
 CONSTANT_STRING(count_parameter_name,"count");
 const long count_min = 1;
-const long count_max = 1000000;
+const long count_max = 2000000000;
 
 CONSTANT_STRING(pwm_index_parameter_name,"pwm_index");
 
@@ -75,12 +67,22 @@ CONSTANT_STRING(set_channel_on_function_name,"setChannelOn");
 CONSTANT_STRING(set_channel_off_function_name,"setChannelOff");
 CONSTANT_STRING(set_channels_on_function_name,"setChannelsOn");
 CONSTANT_STRING(set_channels_off_function_name,"setChannelsOff");
+CONSTANT_STRING(toggle_channel_function_name,"toggleChannel");
+CONSTANT_STRING(toggle_channels_function_name,"toggleChannels");
+CONSTANT_STRING(toggle_all_channels_function_name,"toggleAllChannels");
 CONSTANT_STRING(set_all_channels_on_function_name,"setAllChannelsOn");
 CONSTANT_STRING(set_all_channels_off_function_name,"setAllChannelsOff");
+CONSTANT_STRING(set_channel_on_all_others_off_function_name,"setChannelOnAllOthersOff");
+CONSTANT_STRING(set_channel_off_all_others_on_function_name,"setChannelOffAllOthersOn");
+CONSTANT_STRING(set_channels_on_all_others_off_function_name,"setChannelsOnAllOthersOff");
+CONSTANT_STRING(set_channels_off_all_others_on_function_name,"setChannelsOffAllOthersOn");
+CONSTANT_STRING(get_channels_on_function_name,"getChannelsOn");
+CONSTANT_STRING(get_channels_off_function_name,"getChannelsOff");
+CONSTANT_STRING(get_channel_count_function_name,"getChannelCount");
+CONSTANT_STRING(save_state_function_name,"saveState");
+CONSTANT_STRING(recall_state_function_name,"recallState");
 CONSTANT_STRING(add_pwm_function_name,"addPwm");
 CONSTANT_STRING(start_pwm_function_name,"startPwm");
-CONSTANT_STRING(add_toggle_pwm_function_name,"addTogglePwm");
-CONSTANT_STRING(start_toggle_pwm_function_name,"startTogglePwm");
 CONSTANT_STRING(stop_pwm_function_name,"stopPwm");
 CONSTANT_STRING(stop_all_pwm_function_name,"stopAllPwm");
 

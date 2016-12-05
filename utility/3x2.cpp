@@ -17,24 +17,22 @@ namespace constants
 const modular_server::HardwareInfo hardware_info =
   {
     .name_ptr=&hardware_name,
-    .part_number=1171,
+    .part_number=1111,
     .version_major=1,
-    .version_minor=0,
+    .version_minor=1,
   };
 
-const size_t enable_pins[CHANNEL_COUNT] = {8,9};
-const size_t dir_a_pins[CHANNEL_COUNT] = {30,32};
-const size_t dir_b_pins[CHANNEL_COUNT] = {31,33};
-const size_t sense_pins[CHANNEL_COUNT] = {0,1};
+const size_t cs_pin = 10;
+const size_t reset_pin = 2;
+const size_t pwm_pin = 3;
+
+const uint8_t ic_count = 1;
 
 // Interrupts
 
 // Units
 
 // Properties
-const bool polarity_reversed_default[CHANNEL_COUNT] = {false,false};
-
-const bool channels_enabled_default[CHANNEL_COUNT] = {true,true};
 
 // Parameters
 

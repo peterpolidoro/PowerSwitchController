@@ -18,10 +18,12 @@ namespace power_switch_controller
 namespace constants
 {
 //MAX values must be >= 1, >= created/copied count, < RAM limit
-enum{PROPERTY_COUNT_MAX=2};
+enum{PROPERTY_COUNT_MAX=1};
 enum{PARAMETER_COUNT_MAX=8};
-enum{FUNCTION_COUNT_MAX=12};
+enum{FUNCTION_COUNT_MAX=22};
 enum{CALLBACK_COUNT_MAX=1};
+
+enum {STATE_COUNT=16};
 
 extern ConstantString device_name;
 
@@ -31,16 +33,21 @@ extern const modular_server::FirmwareInfo firmware_info;
 extern ConstantString hardware_name;
 extern const modular_server::HardwareInfo hardware_info;
 
-enum{EVENT_COUNT_MAX=8};
-enum{INDEXED_PULSES_COUNT_MAX=4};
+enum{EVENT_COUNT_MAX=16};
+enum{INDEXED_PULSES_COUNT_MAX=8};
 extern const int bad_index;
 
 struct PulseInfo
 {
   uint32_t channels;
-  ConstantString * polarity_ptr;
   EventIdPair event_id_pair;
 };
+
+extern const size_t cs_pin;
+extern const size_t reset_pin;
+extern const size_t pwm_pin;
+
+extern const uint8_t ic_count;
 
 // Interrupts
 
@@ -49,20 +56,15 @@ extern ConstantString ms_unit;
 
 // Properties
 // Property values must be long, double, bool, long[], double[], bool[], char[], ConstantString *
-extern ConstantString polarity_reversed_property_name;
-
-extern ConstantString channels_enabled_property_name;
+extern ConstantString states_property_name;
+extern const long states_array_default[STATE_COUNT];
 
 // Parameters
 extern ConstantString channel_parameter_name;
 
 extern ConstantString channels_parameter_name;
 
-extern ConstantString polarity_parameter_name;
-enum{POLARITY_SUBSET_LENGTH=2};
-extern ConstantString polarity_positive;
-extern ConstantString polarity_negative;
-extern modular_server::SubsetMemberType polarity_ptr_subset[POLARITY_SUBSET_LENGTH];
+extern ConstantString state_parameter_name;
 
 extern ConstantString delay_parameter_name;
 extern const long delay_min;
@@ -87,12 +89,22 @@ extern ConstantString set_channel_on_function_name;
 extern ConstantString set_channel_off_function_name;
 extern ConstantString set_channels_on_function_name;
 extern ConstantString set_channels_off_function_name;
+extern ConstantString toggle_channel_function_name;
+extern ConstantString toggle_channels_function_name;
+extern ConstantString toggle_all_channels_function_name;
 extern ConstantString set_all_channels_on_function_name;
 extern ConstantString set_all_channels_off_function_name;
+extern ConstantString set_channel_on_all_others_off_function_name;
+extern ConstantString set_channel_off_all_others_on_function_name;
+extern ConstantString set_channels_on_all_others_off_function_name;
+extern ConstantString set_channels_off_all_others_on_function_name;
+extern ConstantString get_channels_on_function_name;
+extern ConstantString get_channels_off_function_name;
+extern ConstantString get_channel_count_function_name;
+extern ConstantString save_state_function_name;
+extern ConstantString recall_state_function_name;
 extern ConstantString add_pwm_function_name;
 extern ConstantString start_pwm_function_name;
-extern ConstantString add_toggle_pwm_function_name;
-extern ConstantString start_toggle_pwm_function_name;
 extern ConstantString stop_pwm_function_name;
 extern ConstantString stop_all_pwm_function_name;
 

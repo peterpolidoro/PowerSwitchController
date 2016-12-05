@@ -22,6 +22,8 @@
 #include "IndexedContainer.h"
 #include "FunctorCallbacks.h"
 
+#include "SPI.h"
+#include "TLE72X.h"
 #include "EventController.h"
 
 #include "ModularServer.h"
@@ -30,43 +32,28 @@
 #include "utility/Constants.h"
 
 
-class PowerSwitchController : public ModularDevice
+class PowerSwitchController : public ModularDevice, public TLE72X
 {
 public:
   PowerSwitchController();
   virtual void setup();
-  void setChannelOn(const size_t channel, const ConstantString * const polarity_ptr);
-  void setChannelOff(const size_t channel);
-  void setChannelsOn(const uint32_t channels, const ConstantString * const polarity_ptr);
-  void setChannelsOff(const uint32_t channels);
-  void setAllChannelsOn(const ConstantString * const polarity_ptr);
-  void setAllChannelsOff();
+
+  void saveState(const size_t state);
+  void recallState(const size_t state);
+
   int addPwm(const uint32_t channels,
-             const ConstantString * const polarity_ptr,
              const long delay,
              const long period,
              const long on_duration,
              const long count);
   int startPwm(const uint32_t channels,
-               const ConstantString * const polarity_ptr,
                const long delay,
                const long period,
                const long on_duration);
-  int addTogglePwm(const uint32_t channels,
-                   const ConstantString * const polarity_ptr,
-                   const long delay,
-                   const long period,
-                   const long on_duration,
-                   const long count);
-  int startTogglePwm(const uint32_t channels,
-                     const ConstantString * const polarity_ptr,
-                     const long delay,
-                     const long period,
-                     const long on_duration);
   void stopPwm(const int pwm_index);
   void stopAllPwm();
+
   uint32_t arrayToChannels(ArduinoJson::JsonArray & channels_array);
-  ConstantString * const stringToPolarityPtr(const char * string);
 
   // Handlers
   virtual void startPwmHandler(int index);
@@ -90,17 +77,26 @@ private:
   void setChannelOffHandler();
   void setChannelsOnHandler();
   void setChannelsOffHandler();
+  void toggleChannelHandler();
+  void toggleChannelsHandler();
+  void toggleAllChannelsHandler();
   void setAllChannelsOnHandler();
   void setAllChannelsOffHandler();
+  void setChannelOnAllOthersOffHandler();
+  void setChannelOffAllOthersOnHandler();
+  void setChannelsOnAllOthersOffHandler();
+  void setChannelsOffAllOthersOnHandler();
+  void getChannelsOnHandler();
+  void getChannelsOffHandler();
+  void getChannelCountHandler();
+  void saveStateHandler();
+  void recallStateHandler();
   void addPwmHandler();
   void startPwmHandler();
-  void addTogglePwmHandler();
-  void startTogglePwmHandler();
   void stopPwmHandler();
   void stopAllPwmHandler();
   void setChannelsOnHandler(int index);
   void setChannelsOffHandler(int index);
-  void setChannelsOnReversedHandler(int index);
 
 };
 

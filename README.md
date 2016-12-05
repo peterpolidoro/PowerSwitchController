@@ -22,19 +22,29 @@ License:
       "setChannelOff",
       "setChannelsOn",
       "setChannelsOff",
+      "toggleChannel",
+      "toggleChannels",
+      "toggleAllChannels",
       "setAllChannelsOn",
       "setAllChannelsOff",
+      "setChannelOnAllOthersOff",
+      "setChannelOffAllOthersOn",
+      "setChannelsOnAllOthersOff",
+      "setChannelsOffAllOthersOn",
+      "getChannelsOn",
+      "getChannelsOff",
+      "getChannelCount",
+      "saveState",
+      "recallState",
       "addPwm",
       "startPwm",
-      "addTogglePwm",
-      "startTogglePwm",
       "stopPwm",
       "stopAllPwm"
     ],
     "parameters":[
       "channel",
       "channels",
-      "polarity",
+      "state",
       "delay",
       "period",
       "on_duration",
@@ -42,8 +52,7 @@ License:
       "pwm_index"
     ],
     "properties":[
-      "polarityReversed",
-      "channelsEnabled"
+      "states"
     ],
     "callbacks":[]
   }

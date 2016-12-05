@@ -10,7 +10,8 @@
 
 using namespace power_switch_controller;
 
-PowerSwitchController::PowerSwitchController()
+PowerSwitchController::PowerSwitchController() :
+  TLE72X(constants::cs_pin,constants::reset_pin)
 {
 }
 
@@ -18,18 +19,14 @@ void PowerSwitchController::setup()
 {
   // Parent Setup
   ModularDevice::setup();
+  TLE72X::setup(constants::ic_count);
 
   // Event Controller Setup
   event_controller_.setup();
 
   // Pin Setup
-  for (int channel=0; channel<constants::CHANNEL_COUNT; ++channel)
-  {
-    pinMode(constants::enable_pins[channel],OUTPUT);
-    digitalWrite(constants::enable_pins[channel],LOW);
-    pinMode(constants::dir_a_pins[channel],OUTPUT);
-    pinMode(constants::dir_b_pins[channel],OUTPUT);
-  }
+  pinMode(constants::pwm_pin,OUTPUT);
+  digitalWrite(constants::pwm_pin,HIGH);
 
   // Set Device ID
   modular_server_.setDeviceName(constants::device_name);
@@ -43,15 +40,6 @@ void PowerSwitchController::setup()
   modular_server::Interrupt & bnc_b_interrupt = modular_server_.createInterrupt(constants::bnc_b_interrupt_name,
                                                                                 constants::bnc_b_pin);
 
-  modular_server::Interrupt & switch_0_interrupt = modular_server_.createInterrupt(constants::switch_0_interrupt_name,
-                                                                                   constants::switch_0_pin);
-
-  modular_server::Interrupt & switch_1_interrupt = modular_server_.createInterrupt(constants::switch_1_interrupt_name,
-                                                                                   constants::switch_1_pin);
-
-  modular_server::Interrupt & switch_2_interrupt = modular_server_.createInterrupt(constants::switch_2_interrupt_name,
-                                                                                   constants::switch_2_pin);
-
 #endif
 
   // Add Firmware
@@ -61,10 +49,7 @@ void PowerSwitchController::setup()
                               functions_,
                               callbacks_);
   // Properties
-  modular_server::Property & polarity_reversed_property = modular_server_.createProperty(constants::polarity_reversed_property_name,constants::polarity_reversed_default);
-
-  modular_server::Property & channels_enabled_property = modular_server_.createProperty(constants::channels_enabled_property_name,constants::channels_enabled_default);
-  channels_enabled_property.attachPostSetElementValueFunctor(makeFunctor((Functor1<const size_t> *)0,*this,&PowerSwitchController::setChannelOff));
+  modular_server::Property & states_property = modular_server_.createProperty(constants::states_property_name,constants::states_array_default);
 
   // Parameters
   modular_server::Parameter & channel_parameter = modular_server_.createParameter(constants::channel_parameter_name);
@@ -74,9 +59,8 @@ void PowerSwitchController::setup()
   channels_parameter.setRange(0,constants::CHANNEL_COUNT-1);
   channels_parameter.setArrayLengthRange(1,constants::CHANNEL_COUNT);
 
-  modular_server::Parameter & polarity_parameter = modular_server_.createParameter(constants::polarity_parameter_name);
-  polarity_parameter.setTypeString();
-  polarity_parameter.setSubset(constants::polarity_ptr_subset);
+  modular_server::Parameter & state_parameter = modular_server_.createParameter(constants::state_parameter_name);
+  state_parameter.setRange(0,constants::STATE_COUNT-1);
 
   modular_server::Parameter & delay_parameter = modular_server_.createParameter(constants::delay_parameter_name);
   delay_parameter.setRange(constants::delay_min,constants::delay_max);
@@ -101,7 +85,6 @@ void PowerSwitchController::setup()
   modular_server::Function & set_channel_on_function = modular_server_.createFunction(constants::set_channel_on_function_name);
   set_channel_on_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setChannelOnHandler));
   set_channel_on_function.addParameter(channel_parameter);
-  set_channel_on_function.addParameter(polarity_parameter);
 
   modular_server::Function & set_channel_off_function = modular_server_.createFunction(constants::set_channel_off_function_name);
   set_channel_off_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setChannelOffHandler));
@@ -110,23 +93,66 @@ void PowerSwitchController::setup()
   modular_server::Function & set_channels_on_function = modular_server_.createFunction(constants::set_channels_on_function_name);
   set_channels_on_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setChannelsOnHandler));
   set_channels_on_function.addParameter(channels_parameter);
-  set_channels_on_function.addParameter(polarity_parameter);
 
   modular_server::Function & set_channels_off_function = modular_server_.createFunction(constants::set_channels_off_function_name);
   set_channels_off_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setChannelsOffHandler));
   set_channels_off_function.addParameter(channels_parameter);
 
+  modular_server::Function & toggle_channel_function = modular_server_.createFunction(constants::toggle_channel_function_name);
+  toggle_channel_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::toggleChannelHandler));
+  toggle_channel_function.addParameter(channel_parameter);
+
+  modular_server::Function & toggle_channels_function = modular_server_.createFunction(constants::toggle_channels_function_name);
+  toggle_channels_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::toggleChannelsHandler));
+  toggle_channels_function.addParameter(channels_parameter);
+
+  modular_server::Function & toggle_all_channels_function = modular_server_.createFunction(constants::toggle_all_channels_function_name);
+  toggle_all_channels_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::toggleAllChannelsHandler));
+
   modular_server::Function & set_all_channels_on_function = modular_server_.createFunction(constants::set_all_channels_on_function_name);
   set_all_channels_on_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setAllChannelsOnHandler));
-  set_all_channels_on_function.addParameter(polarity_parameter);
 
   modular_server::Function & set_all_channels_off_function = modular_server_.createFunction(constants::set_all_channels_off_function_name);
   set_all_channels_off_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setAllChannelsOffHandler));
 
+  modular_server::Function & set_channel_on_all_others_off_function = modular_server_.createFunction(constants::set_channel_on_all_others_off_function_name);
+  set_channel_on_all_others_off_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setChannelOnAllOthersOffHandler));
+  set_channel_on_all_others_off_function.addParameter(channel_parameter);
+
+  modular_server::Function & set_channel_off_all_others_on_function = modular_server_.createFunction(constants::set_channel_off_all_others_on_function_name);
+  set_channel_off_all_others_on_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setChannelOffAllOthersOnHandler));
+  set_channel_off_all_others_on_function.addParameter(channel_parameter);
+
+  modular_server::Function & set_channels_on_all_others_off_function = modular_server_.createFunction(constants::set_channels_on_all_others_off_function_name);
+  set_channels_on_all_others_off_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setChannelsOnAllOthersOffHandler));
+  set_channels_on_all_others_off_function.addParameter(channels_parameter);
+
+  modular_server::Function & set_channels_off_all_others_on_function = modular_server_.createFunction(constants::set_channels_off_all_others_on_function_name);
+  set_channels_off_all_others_on_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setChannelsOffAllOthersOnHandler));
+  set_channels_off_all_others_on_function.addParameter(channels_parameter);
+
+  modular_server::Function & get_channels_on_function = modular_server_.createFunction(constants::get_channels_on_function_name);
+  get_channels_on_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::getChannelsOnHandler));
+  get_channels_on_function.setReturnTypeArray();
+
+  modular_server::Function & get_channels_off_function = modular_server_.createFunction(constants::get_channels_off_function_name);
+  get_channels_off_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::getChannelsOffHandler));
+  get_channels_off_function.setReturnTypeArray();
+
+  modular_server::Function & get_channel_count_function = modular_server_.createFunction(constants::get_channel_count_function_name);
+  get_channel_count_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::getChannelCountHandler));
+
+  modular_server::Function & save_state_function = modular_server_.createFunction(constants::save_state_function_name);
+  save_state_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::saveStateHandler));
+  save_state_function.addParameter(state_parameter);
+
+  modular_server::Function & recall_state_function = modular_server_.createFunction(constants::recall_state_function_name);
+  recall_state_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::recallStateHandler));
+  recall_state_function.addParameter(state_parameter);
+
   modular_server::Function & add_pwm_function = modular_server_.createFunction(constants::add_pwm_function_name);
   add_pwm_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::addPwmHandler));
   add_pwm_function.addParameter(channels_parameter);
-  add_pwm_function.addParameter(polarity_parameter);
   add_pwm_function.addParameter(delay_parameter);
   add_pwm_function.addParameter(period_parameter);
   add_pwm_function.addParameter(on_duration_parameter);
@@ -136,30 +162,10 @@ void PowerSwitchController::setup()
   modular_server::Function & start_pwm_function = modular_server_.createFunction(constants::start_pwm_function_name);
   start_pwm_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::startPwmHandler));
   start_pwm_function.addParameter(channels_parameter);
-  start_pwm_function.addParameter(polarity_parameter);
   start_pwm_function.addParameter(delay_parameter);
   start_pwm_function.addParameter(period_parameter);
   start_pwm_function.addParameter(on_duration_parameter);
   start_pwm_function.setReturnTypeLong();
-
-  modular_server::Function & add_toggle_pwm_function = modular_server_.createFunction(constants::add_toggle_pwm_function_name);
-  add_toggle_pwm_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::addTogglePwmHandler));
-  add_toggle_pwm_function.addParameter(channels_parameter);
-  add_toggle_pwm_function.addParameter(polarity_parameter);
-  add_toggle_pwm_function.addParameter(delay_parameter);
-  add_toggle_pwm_function.addParameter(period_parameter);
-  add_toggle_pwm_function.addParameter(on_duration_parameter);
-  add_toggle_pwm_function.addParameter(count_parameter);
-  add_toggle_pwm_function.setReturnTypeLong();
-
-  modular_server::Function & start_toggle_pwm_function = modular_server_.createFunction(constants::start_toggle_pwm_function_name);
-  start_toggle_pwm_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::startTogglePwmHandler));
-  start_toggle_pwm_function.addParameter(channels_parameter);
-  start_toggle_pwm_function.addParameter(polarity_parameter);
-  start_toggle_pwm_function.addParameter(delay_parameter);
-  start_toggle_pwm_function.addParameter(period_parameter);
-  start_toggle_pwm_function.addParameter(on_duration_parameter);
-  start_toggle_pwm_function.setReturnTypeLong();
 
   modular_server::Function & stop_pwm_function = modular_server_.createFunction(constants::stop_pwm_function_name);
   stop_pwm_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::stopPwmHandler));
@@ -172,83 +178,28 @@ void PowerSwitchController::setup()
 
 }
 
-void PowerSwitchController::setChannelOn(const size_t channel, const ConstantString * const polarity_ptr)
+void PowerSwitchController::saveState(const size_t state)
 {
-  bool channel_enabled;
-  modular_server_.property(constants::channels_enabled_property_name).getElementValue(channel,
-                                                                                channel_enabled);
-  if (!channel_enabled)
+  if (state >= constants::STATE_COUNT)
   {
     return;
   }
-  bool channel_polarity_reversed;
-  modular_server_.property(constants::polarity_reversed_property_name).getElementValue(channel,
-                                                                                 channel_polarity_reversed);
-  const ConstantString * polarity_corrected_ptr = polarity_ptr;
-  if (channel_polarity_reversed)
-  {
-    polarity_corrected_ptr = ((polarity_ptr == &constants::polarity_positive) ? &constants::polarity_negative : &constants::polarity_positive);
-  }
-  if (polarity_corrected_ptr == &constants::polarity_positive)
-  {
-    digitalWrite(constants::dir_a_pins[channel],HIGH);
-    digitalWrite(constants::dir_b_pins[channel],LOW);
-  }
-  else
-  {
-    digitalWrite(constants::dir_a_pins[channel],LOW);
-    digitalWrite(constants::dir_b_pins[channel],HIGH);
-  }
-  digitalWrite(constants::enable_pins[channel],HIGH);
+  long channels = getChannelsOn();
+  modular_server_.property(constants::states_property_name).setElementValue(state,channels);
 }
 
-void PowerSwitchController::setChannelOff(const size_t channel)
+void PowerSwitchController::recallState(const size_t state)
 {
-  digitalWrite(constants::enable_pins[channel],LOW);
-}
-
-void PowerSwitchController::setChannelsOn(const uint32_t channels, const ConstantString * const polarity_ptr)
-{
-  uint32_t bit = 1;
-  for (int channel=0; channel<constants::CHANNEL_COUNT; ++channel)
+  if (state >= constants::STATE_COUNT)
   {
-    if (channels & (bit << channel))
-    {
-      setChannelOn(channel,polarity_ptr);
-    }
+    return;
   }
-}
-
-void PowerSwitchController::setChannelsOff(const uint32_t channels)
-{
-  uint32_t bit = 1;
-  for (int channel=0; channel<constants::CHANNEL_COUNT; ++channel)
-  {
-    if (channels & (bit << channel))
-    {
-      setChannelOff(channel);
-    }
-  }
-}
-
-void PowerSwitchController::setAllChannelsOn(const ConstantString * const polarity_ptr)
-{
-  for (int channel=0; channel<constants::CHANNEL_COUNT; ++channel)
-  {
-    setChannelOn(channel,polarity_ptr);
-  }
-}
-
-void PowerSwitchController::setAllChannelsOff()
-{
-  for (int channel=0; channel<constants::CHANNEL_COUNT; ++channel)
-  {
-    setChannelOff(channel);
-  }
+  long channels;
+  modular_server_.property(constants::states_property_name).getElementValue(state,channels);
+  setChannels(channels);
 }
 
 int PowerSwitchController::addPwm(const uint32_t channels,
-                              const ConstantString * const polarity_ptr,
                               const long delay,
                               const long period,
                               const long on_duration,
@@ -260,7 +211,6 @@ int PowerSwitchController::addPwm(const uint32_t channels,
   }
   power_switch_controller::constants::PulseInfo pulse_info;
   pulse_info.channels = channels;
-  pulse_info.polarity_ptr = polarity_ptr;
   int index = indexed_pulses_.add(pulse_info);
   EventIdPair event_id_pair = event_controller_.addPwmUsingDelay(makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOnHandler),
                                                                  makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOffHandler),
@@ -277,7 +227,6 @@ int PowerSwitchController::addPwm(const uint32_t channels,
 }
 
 int PowerSwitchController::startPwm(const uint32_t channels,
-                                const ConstantString * const polarity_ptr,
                                 const long delay,
                                 const long period,
                                 const long on_duration)
@@ -288,66 +237,9 @@ int PowerSwitchController::startPwm(const uint32_t channels,
   }
   power_switch_controller::constants::PulseInfo pulse_info;
   pulse_info.channels = channels;
-  pulse_info.polarity_ptr = polarity_ptr;
   int index = indexed_pulses_.add(pulse_info);
   EventIdPair event_id_pair = event_controller_.addInfinitePwmUsingDelay(makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOnHandler),
                                                                          makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOffHandler),
-                                                                         delay,
-                                                                         period,
-                                                                         on_duration,
-                                                                         index);
-  event_controller_.addStartFunctor(event_id_pair,makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::startPwmHandler));
-  event_controller_.addStopFunctor(event_id_pair,makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::stopPwmHandler));
-  indexed_pulses_[index].event_id_pair = event_id_pair;
-  event_controller_.enable(event_id_pair);
-  return index;
-}
-
-int PowerSwitchController::addTogglePwm(const uint32_t channels,
-                                    const ConstantString * const polarity_ptr,
-                                    const long delay,
-                                    const long period,
-                                    const long on_duration,
-                                    const long count)
-{
-  if (indexed_pulses_.full())
-  {
-    return constants::bad_index;
-  }
-  power_switch_controller::constants::PulseInfo pulse_info;
-  pulse_info.channels = channels;
-  pulse_info.polarity_ptr = polarity_ptr;
-  int index = indexed_pulses_.add(pulse_info);
-  EventIdPair event_id_pair = event_controller_.addPwmUsingDelay(makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOnHandler),
-                                                                 makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOnReversedHandler),
-                                                                 delay,
-                                                                 period,
-                                                                 on_duration,
-                                                                 count,
-                                                                 index);
-  event_controller_.addStartFunctor(event_id_pair,makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::startPwmHandler));
-  event_controller_.addStopFunctor(event_id_pair,makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::stopPwmHandler));
-  indexed_pulses_[index].event_id_pair = event_id_pair;
-  event_controller_.enable(event_id_pair);
-  return index;
-}
-
-int PowerSwitchController::startTogglePwm(const uint32_t channels,
-                                      const ConstantString * const polarity_ptr,
-                                      const long delay,
-                                      const long period,
-                                      const long on_duration)
-{
-  if (indexed_pulses_.full())
-  {
-    return -1;
-  }
-  power_switch_controller::constants::PulseInfo pulse_info;
-  pulse_info.channels = channels;
-  pulse_info.polarity_ptr = polarity_ptr;
-  int index = indexed_pulses_.add(pulse_info);
-  EventIdPair event_id_pair = event_controller_.addInfinitePwmUsingDelay(makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOnHandler),
-                                                                         makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOnReversedHandler),
                                                                          delay,
                                                                          period,
                                                                          on_duration,
@@ -394,18 +286,6 @@ uint32_t PowerSwitchController::arrayToChannels(ArduinoJson::JsonArray & channel
   return channels;
 }
 
-ConstantString * const PowerSwitchController::stringToPolarityPtr(const char * string)
-{
-  if (string == constants::polarity_positive)
-  {
-    return &constants::polarity_positive;
-  }
-  else
-  {
-    return &constants::polarity_negative;
-  }
-}
-
 // Handlers must be non-blocking (avoid 'delay')
 //
 // modular_server_.parameter(parameter_name).getValue(value) value type must be either:
@@ -438,10 +318,7 @@ void PowerSwitchController::setChannelOnHandler()
 {
   int channel;
   modular_server_.parameter(constants::channel_parameter_name).getValue(channel);
-  const char * polarity_string;
-  modular_server_.parameter(constants::polarity_parameter_name).getValue(polarity_string);
-  const ConstantString * const polarity_ptr = stringToPolarityPtr(polarity_string);
-  setChannelOn(channel,polarity_ptr);
+  setChannelOn(channel);
 }
 
 void PowerSwitchController::setChannelOffHandler()
@@ -455,11 +332,8 @@ void PowerSwitchController::setChannelsOnHandler()
 {
   ArduinoJson::JsonArray * channels_array_ptr;
   modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
-  const char * polarity_string;
-  modular_server_.parameter(constants::polarity_parameter_name).getValue(polarity_string);
   const uint32_t channels = arrayToChannels(*channels_array_ptr);
-  const ConstantString * const polarity_ptr = stringToPolarityPtr(polarity_string);
-  setChannelsOn(channels,polarity_ptr);
+  setChannelsOn(channels);
 }
 
 void PowerSwitchController::setChannelsOffHandler()
@@ -470,12 +344,29 @@ void PowerSwitchController::setChannelsOffHandler()
   setChannelsOff(channels);
 }
 
+void PowerSwitchController::toggleChannelHandler()
+{
+  int channel;
+  modular_server_.parameter(constants::channel_parameter_name).getValue(channel);
+  toggleChannel(channel);
+}
+
+void PowerSwitchController::toggleChannelsHandler()
+{
+  ArduinoJson::JsonArray * channels_array_ptr;
+  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
+  const uint32_t channels = arrayToChannels(*channels_array_ptr);
+  toggleChannels(channels);
+}
+
+void PowerSwitchController::toggleAllChannelsHandler()
+{
+  toggleAllChannels();
+}
+
 void PowerSwitchController::setAllChannelsOnHandler()
 {
-  const char * polarity_string;
-  modular_server_.parameter(constants::polarity_parameter_name).getValue(polarity_string);
-  const ConstantString * const polarity_ptr = stringToPolarityPtr(polarity_string);
-  setAllChannelsOn(polarity_ptr);
+  setAllChannelsOn();
 }
 
 void PowerSwitchController::setAllChannelsOffHandler()
@@ -483,12 +374,93 @@ void PowerSwitchController::setAllChannelsOffHandler()
   setAllChannelsOff();
 }
 
+void PowerSwitchController::setChannelOnAllOthersOffHandler()
+{
+  int channel;
+  modular_server_.parameter(constants::channel_parameter_name).getValue(channel);
+  setChannelOnAllOthersOff(channel);
+}
+
+void PowerSwitchController::setChannelOffAllOthersOnHandler()
+{
+  int channel;
+  modular_server_.parameter(constants::channel_parameter_name).getValue(channel);
+  setChannelOffAllOthersOn(channel);
+}
+
+void PowerSwitchController::setChannelsOnAllOthersOffHandler()
+{
+  ArduinoJson::JsonArray * channels_array_ptr;
+  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
+  const uint32_t channels = arrayToChannels(*channels_array_ptr);
+  setChannelsOnAllOthersOff(channels);
+}
+
+void PowerSwitchController::setChannelsOffAllOthersOnHandler()
+{
+  ArduinoJson::JsonArray * channels_array_ptr;
+  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
+  const uint32_t channels = arrayToChannels(*channels_array_ptr);
+  setChannelsOffAllOthersOn(channels);
+}
+
+void PowerSwitchController::getChannelsOnHandler()
+{
+  uint32_t channels_on = getChannelsOn();
+  uint32_t bit = 1;
+  modular_server_.response().writeResultKey();
+  modular_server_.response().beginArray();
+  for (size_t channel=0; channel<constants::CHANNEL_COUNT; ++channel)
+  {
+    if (channels_on & (bit << channel))
+    {
+      modular_server_.response().write(channel);
+    }
+  }
+  modular_server_.response().endArray();
+}
+
+void PowerSwitchController::getChannelsOffHandler()
+{
+  uint32_t channels_on = getChannelsOn();
+  uint32_t channels_off = ~channels_on;
+  uint32_t bit = 1;
+  modular_server_.response().writeResultKey();
+  modular_server_.response().beginArray();
+  for (size_t channel=0; channel<constants::CHANNEL_COUNT; ++channel)
+  {
+    if (channels_off & (bit << channel))
+    {
+      modular_server_.response().write(channel);
+    }
+  }
+  modular_server_.response().endArray();
+}
+
+void PowerSwitchController::getChannelCountHandler()
+{
+  int channel_count = getChannelCount();
+  modular_server_.response().returnResult(channel_count);
+}
+
+void PowerSwitchController::saveStateHandler()
+{
+  int state;
+  modular_server_.parameter(constants::state_parameter_name).getValue(state);
+  saveState(state);
+}
+
+void PowerSwitchController::recallStateHandler()
+{
+  int state;
+  modular_server_.parameter(constants::state_parameter_name).getValue(state);
+  recallState(state);
+}
+
 void PowerSwitchController::addPwmHandler()
 {
   ArduinoJson::JsonArray * channels_array_ptr;
   modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
-  const char * polarity_string;
-  modular_server_.parameter(constants::polarity_parameter_name).getValue(polarity_string);
   long delay;
   modular_server_.parameter(constants::delay_parameter_name).getValue(delay);
   long period;
@@ -498,8 +470,7 @@ void PowerSwitchController::addPwmHandler()
   long count;
   modular_server_.parameter(constants::count_parameter_name).getValue(count);
   const uint32_t channels = arrayToChannels(*channels_array_ptr);
-  const ConstantString * const polarity_ptr = stringToPolarityPtr(polarity_string);
-  int index = addPwm(channels,polarity_ptr,delay,period,on_duration,count);
+  int index = addPwm(channels,delay,period,on_duration,count);
   if (index >= 0)
   {
     modular_server_.response().returnResult(index);
@@ -514,8 +485,6 @@ void PowerSwitchController::startPwmHandler()
 {
   ArduinoJson::JsonArray * channels_array_ptr;
   modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
-  const char * polarity_string;
-  modular_server_.parameter(constants::polarity_parameter_name).getValue(polarity_string);
   long delay;
   modular_server_.parameter(constants::delay_parameter_name).getValue(delay);
   long period;
@@ -523,60 +492,7 @@ void PowerSwitchController::startPwmHandler()
   long on_duration;
   modular_server_.parameter(constants::on_duration_parameter_name).getValue(on_duration);
   const uint32_t channels = arrayToChannels(*channels_array_ptr);
-  const ConstantString * const polarity_ptr = stringToPolarityPtr(polarity_string);
-  int index = startPwm(channels,polarity_ptr,delay,period,on_duration);
-  if (index >= 0)
-  {
-    modular_server_.response().returnResult(index);
-  }
-  else
-  {
-    modular_server_.response().returnError(constants::pwm_error);
-  }
-}
-
-void PowerSwitchController::addTogglePwmHandler()
-{
-  ArduinoJson::JsonArray * channels_array_ptr;
-  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
-  const char * polarity_string;
-  modular_server_.parameter(constants::polarity_parameter_name).getValue(polarity_string);
-  long delay;
-  modular_server_.parameter(constants::delay_parameter_name).getValue(delay);
-  long period;
-  modular_server_.parameter(constants::period_parameter_name).getValue(period);
-  long on_duration;
-  modular_server_.parameter(constants::on_duration_parameter_name).getValue(on_duration);
-  long count;
-  modular_server_.parameter(constants::count_parameter_name).getValue(count);
-  const uint32_t channels = arrayToChannels(*channels_array_ptr);
-  const ConstantString * const polarity_ptr = stringToPolarityPtr(polarity_string);
-  int index = addTogglePwm(channels,polarity_ptr,delay,period,on_duration,count);
-  if (index >= 0)
-  {
-    modular_server_.response().returnResult(index);
-  }
-  else
-  {
-    modular_server_.response().returnError(constants::pwm_error);
-  }
-}
-
-void PowerSwitchController::startTogglePwmHandler()
-{
-  ArduinoJson::JsonArray * channels_array_ptr;
-  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
-  const char * polarity_string;
-  modular_server_.parameter(constants::polarity_parameter_name).getValue(polarity_string);
-  long delay;
-  modular_server_.parameter(constants::delay_parameter_name).getValue(delay);
-  long period;
-  modular_server_.parameter(constants::period_parameter_name).getValue(period);
-  long on_duration;
-  modular_server_.parameter(constants::on_duration_parameter_name).getValue(on_duration);
-  const uint32_t channels = arrayToChannels(*channels_array_ptr);
-  const ConstantString * const polarity_ptr = stringToPolarityPtr(polarity_string);
-  int index = startTogglePwm(channels,polarity_ptr,delay,period,on_duration);
+  int index = startPwm(channels,delay,period,on_duration);
   if (index >= 0)
   {
     modular_server_.response().returnResult(index);
@@ -602,21 +518,11 @@ void PowerSwitchController::stopAllPwmHandler()
 void PowerSwitchController::setChannelsOnHandler(int index)
 {
   uint32_t & channels = indexed_pulses_[index].channels;
-  const ConstantString * const polarity_ptr = indexed_pulses_[index].polarity_ptr;
-  setChannelsOn(channels,polarity_ptr);
+  setChannelsOn(channels);
 }
 
 void PowerSwitchController::setChannelsOffHandler(int index)
 {
   uint32_t & channels = indexed_pulses_[index].channels;
   setChannelsOff(channels);
-}
-
-void PowerSwitchController::setChannelsOnReversedHandler(int index)
-{
-  uint32_t & channels = indexed_pulses_[index].channels;
-  const ConstantString * const polarity_ptr = indexed_pulses_[index].polarity_ptr;
-  const ConstantString * polarity_reversed_ptr;
-  polarity_reversed_ptr = ((polarity_ptr == &constants::polarity_positive) ? &constants::polarity_negative : &constants::polarity_positive);
-  setChannelsOn(channels,polarity_reversed_ptr);
 }
