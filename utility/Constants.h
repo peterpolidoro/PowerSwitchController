@@ -55,7 +55,7 @@ extern const uint8_t ic_count;
 extern ConstantString ms_unit;
 
 // Properties
-// Property values must be long, double, bool, long[], double[], bool[], char[], ConstantString *
+// Property values must be long, double, bool, long[], double[], bool[], char[], ConstantString *, (ConstantString *)[]
 extern ConstantString states_property_name;
 extern const long states_array_default[STATE_COUNT];
 

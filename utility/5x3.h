@@ -28,7 +28,7 @@ extern const size_t bnc_b_pin;
 // Units
 
 // Properties
-// Property values must be long, double, bool, long[], double[], bool[], char[], ConstantString *
+// Property values must be long, double, bool, long[], double[], bool[], char[], ConstantString *, (ConstantString *)[]
 
 // Parameters
 
