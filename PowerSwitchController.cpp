@@ -18,7 +18,7 @@ PowerSwitchController::PowerSwitchController() :
 void PowerSwitchController::setup()
 {
   // Parent Setup
-  ModularDevice::setup();
+  ModularDeviceBase::setup();
   TLE72X::setup(constants::ic_count);
 
   // Event Controller Setup

@@ -27,12 +27,12 @@
 #include "EventController.h"
 
 #include "ModularServer.h"
-#include "ModularDevice.h"
+#include "ModularDeviceBase.h"
 
 #include "utility/Constants.h"
 
 
-class PowerSwitchController : public ModularDevice, public TLE72X
+class PowerSwitchController : public ModularDeviceBase, public TLE72X
 {
 public:
   PowerSwitchController();
