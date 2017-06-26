@@ -59,6 +59,12 @@ public:
   virtual void startPwmHandler(int index);
   virtual void stopPwmHandler(int index);
 
+protected:
+  EventController<power_switch_controller::constants::EVENT_COUNT_MAX> event_controller_;
+
+  IndexedContainer<power_switch_controller::constants::PulseInfo,
+                   power_switch_controller::constants::INDEXED_PULSES_COUNT_MAX> indexed_pulses_;
+
 private:
   modular_server::Interrupt interrupts_[power_switch_controller::constants::INTERRUPT_COUNT_MAX];
 
@@ -66,11 +72,6 @@ private:
   modular_server::Parameter parameters_[power_switch_controller::constants::PARAMETER_COUNT_MAX];
   modular_server::Function functions_[power_switch_controller::constants::FUNCTION_COUNT_MAX];
   modular_server::Callback callbacks_[power_switch_controller::constants::CALLBACK_COUNT_MAX];
-
-  EventController<power_switch_controller::constants::EVENT_COUNT_MAX> event_controller_;
-
-  IndexedContainer<power_switch_controller::constants::PulseInfo,
-                   power_switch_controller::constants::INDEXED_PULSES_COUNT_MAX> indexed_pulses_;
 
   // Handlers
   void setChannelOnHandler();
