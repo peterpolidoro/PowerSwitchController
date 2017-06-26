@@ -133,11 +133,13 @@ void PowerSwitchController::setup()
 
   modular_server::Function & get_channels_on_function = modular_server_.createFunction(constants::get_channels_on_function_name);
   get_channels_on_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::getChannelsOnHandler));
-  get_channels_on_function.setReturnTypeArray();
+  get_channels_on_function.setResultTypeArray();
+  get_channels_on_function.setResultTypeLong();
 
   modular_server::Function & get_channels_off_function = modular_server_.createFunction(constants::get_channels_off_function_name);
   get_channels_off_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::getChannelsOffHandler));
-  get_channels_off_function.setReturnTypeArray();
+  get_channels_off_function.setResultTypeArray();
+  get_channels_off_function.setResultTypeLong();
 
   modular_server::Function & get_channel_count_function = modular_server_.createFunction(constants::get_channel_count_function_name);
   get_channel_count_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::getChannelCountHandler));
@@ -157,7 +159,7 @@ void PowerSwitchController::setup()
   add_pwm_function.addParameter(period_parameter);
   add_pwm_function.addParameter(on_duration_parameter);
   add_pwm_function.addParameter(count_parameter);
-  add_pwm_function.setReturnTypeLong();
+  add_pwm_function.setResultTypeLong();
 
   modular_server::Function & start_pwm_function = modular_server_.createFunction(constants::start_pwm_function_name);
   start_pwm_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::startPwmHandler));
@@ -165,7 +167,7 @@ void PowerSwitchController::setup()
   start_pwm_function.addParameter(delay_parameter);
   start_pwm_function.addParameter(period_parameter);
   start_pwm_function.addParameter(on_duration_parameter);
-  start_pwm_function.setReturnTypeLong();
+  start_pwm_function.setResultTypeLong();
 
   modular_server::Function & stop_pwm_function = modular_server_.createFunction(constants::stop_pwm_function_name);
   stop_pwm_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::stopPwmHandler));
