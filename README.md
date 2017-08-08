@@ -8,7 +8,19 @@ License:
 
     BSD
 
-[Examples](./examples)
+## Ancestors
+
+[ModularServer](https://github.com/janelia-arduino/ModularServer)
+
+[ModularDeviceBase](https://github.com/janelia-arduino/ModularDeviceBase)
+
+## Clients
+
+## Devices
+
+[modular_device_base](https://github.com/janelia-modular-devices/modular_device_base.git)
+
+[power_switch_controller](https://github.com/janelia-modular-devices/power_switch_controller.git)
 
 ## API
 
@@ -39,7 +51,9 @@ License:
       "addPwm",
       "startPwm",
       "stopPwm",
-      "stopAllPwm"
+      "stopAllPwm",
+      "setPower",
+      "getPowers"
     ],
     "parameters":[
       "channel",
@@ -49,7 +63,9 @@ License:
       "period",
       "on_duration",
       "count",
-      "pwm_index"
+      "pwm_index",
+      "channel_group",
+      "power"
     ],
     "properties":[
       "states"
@@ -58,6 +74,10 @@ License:
   }
 }
 ```
+
+## API Verbose
+
+[API Verbose](./api.json)
 
 ## More Detailed Modular Device Information
 

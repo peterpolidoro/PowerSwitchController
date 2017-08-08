@@ -19,8 +19,8 @@ namespace constants
 {
 //MAX values must be >= 1, >= created/copied count, < RAM limit
 enum{PROPERTY_COUNT_MAX=1};
-enum{PARAMETER_COUNT_MAX=8};
-enum{FUNCTION_COUNT_MAX=22};
+enum{PARAMETER_COUNT_MAX=10};
+enum{FUNCTION_COUNT_MAX=24};
 enum{CALLBACK_COUNT_MAX=1};
 
 enum {STATE_COUNT=16};
@@ -45,14 +45,18 @@ struct PulseInfo
 
 extern const size_t cs_pin;
 extern const size_t reset_pin;
-extern const size_t pwm_pin;
+extern const size_t in_pin;
 
-extern const uint8_t ic_count;
+extern const size_t power_pwm_frequency;
+extern const size_t power_pwm_resolution;
+extern const size_t power_pwm_value_min;
+extern const size_t power_pwm_value_max;
 
 // Interrupts
 
 // Units
-extern ConstantString ms_unit;
+extern ConstantString ms_units;
+extern ConstantString percent_units;
 
 // Properties
 // Property values must be long, double, bool, long[], double[], bool[], char[], ConstantString *, (ConstantString *)[]
@@ -84,6 +88,13 @@ extern const long count_max;
 
 extern ConstantString pwm_index_parameter_name;
 
+extern ConstantString channel_group_parameter_name;
+extern const long channel_group_min;
+
+extern ConstantString power_parameter_name;
+extern const long power_min;
+extern const long power_max;
+
 // Functions
 extern ConstantString set_channel_on_function_name;
 extern ConstantString set_channel_off_function_name;
@@ -107,6 +118,8 @@ extern ConstantString add_pwm_function_name;
 extern ConstantString start_pwm_function_name;
 extern ConstantString stop_pwm_function_name;
 extern ConstantString stop_all_pwm_function_name;
+extern ConstantString set_power_function_name;
+extern ConstantString get_powers_function_name;
 
 // Callbacks
 

@@ -19,14 +19,20 @@ void PowerSwitchController::setup()
 {
   // Parent Setup
   ModularDeviceBase::setup();
-  TLE72X::setup(constants::ic_count);
+  TLE72X::setup(constants::IC_COUNT);
 
   // Event Controller Setup
   event_controller_.setup();
 
   // Pin Setup
-  pinMode(constants::pwm_pin,OUTPUT);
-  digitalWrite(constants::pwm_pin,HIGH);
+  pinMode(constants::in_pin,OUTPUT);
+  digitalWrite(constants::in_pin,HIGH);
+  for (size_t i=0; i<constants::IC_COUNT; ++i)
+  {
+    pinMode(constants::map_pins[i],OUTPUT);
+    digitalWrite(constants::map_pins[i],HIGH);
+    powers_[i] = constants::power_max;
+  }
 
   // Set Device ID
   modular_server_.setDeviceName(constants::device_name);
@@ -49,7 +55,7 @@ void PowerSwitchController::setup()
                               functions_,
                               callbacks_);
   // Properties
-  modular_server::Property & states_property = modular_server_.createProperty(constants::states_property_name,constants::states_array_default);
+  modular_server_.createProperty(constants::states_property_name,constants::states_array_default);
 
   // Parameters
   modular_server::Parameter & channel_parameter = modular_server_.createParameter(constants::channel_parameter_name);
@@ -64,22 +70,29 @@ void PowerSwitchController::setup()
 
   modular_server::Parameter & delay_parameter = modular_server_.createParameter(constants::delay_parameter_name);
   delay_parameter.setRange(constants::delay_min,constants::delay_max);
-  delay_parameter.setUnits(constants::ms_unit);
+  delay_parameter.setUnits(constants::ms_units);
 
   modular_server::Parameter & period_parameter = modular_server_.createParameter(constants::period_parameter_name);
   period_parameter.setRange(constants::period_min,constants::period_max);
-  period_parameter.setUnits(constants::ms_unit);
+  period_parameter.setUnits(constants::ms_units);
 
   modular_server::Parameter & on_duration_parameter = modular_server_.createParameter(constants::on_duration_parameter_name);
   on_duration_parameter.setRange(constants::on_duration_min,constants::on_duration_max);
-  on_duration_parameter.setUnits(constants::ms_unit);
+  on_duration_parameter.setUnits(constants::ms_units);
 
   modular_server::Parameter & count_parameter = modular_server_.createParameter(constants::count_parameter_name);
   count_parameter.setRange(constants::count_min,constants::count_max);
-  count_parameter.setUnits(constants::ms_unit);
+  count_parameter.setUnits(constants::ms_units);
 
   modular_server::Parameter & pwm_index_parameter = modular_server_.createParameter(constants::pwm_index_parameter_name);
   pwm_index_parameter.setRange(0,constants::INDEXED_PULSES_COUNT_MAX-1);
+
+  modular_server::Parameter & channel_group_parameter = modular_server_.createParameter(constants::channel_group_parameter_name);
+  channel_group_parameter.setRange(constants::channel_group_min,(long)constants::IC_COUNT-1);
+
+  modular_server::Parameter & power_parameter = modular_server_.createParameter(constants::power_parameter_name);
+  power_parameter.setRange(constants::power_min,constants::power_max);
+  power_parameter.setUnits(constants::percent_units);
 
   // Functions
   modular_server::Function & set_channel_on_function = modular_server_.createFunction(constants::set_channel_on_function_name);
@@ -176,6 +189,14 @@ void PowerSwitchController::setup()
   modular_server::Function & stop_all_pwm_function = modular_server_.createFunction(constants::stop_all_pwm_function_name);
   stop_all_pwm_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::stopAllPwmHandler));
 
+  modular_server::Function & set_power_function = modular_server_.createFunction(constants::set_power_function_name);
+  set_power_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::setPowerHandler));
+  set_power_function.addParameter(channel_group_parameter);
+  set_power_function.addParameter(power_parameter);
+
+  modular_server::Function & get_powers_function = modular_server_.createFunction(constants::get_powers_function_name);
+  get_powers_function.attachFunctor(makeFunctor((Functor0 *)0,*this,&PowerSwitchController::getPowersHandler));
+
   // Callbacks
 
 }
@@ -202,10 +223,10 @@ void PowerSwitchController::recallState(const size_t state)
 }
 
 int PowerSwitchController::addPwm(const uint32_t channels,
-                              const long delay,
-                              const long period,
-                              const long on_duration,
-                              const long count)
+                                  const long delay,
+                                  const long period,
+                                  const long on_duration,
+                                  const long count)
 {
   if (indexed_pulses_.full())
   {
@@ -229,9 +250,9 @@ int PowerSwitchController::addPwm(const uint32_t channels,
 }
 
 int PowerSwitchController::startPwm(const uint32_t channels,
-                                const long delay,
-                                const long period,
-                                const long on_duration)
+                                    const long delay,
+                                    const long period,
+                                    const long on_duration)
 {
   if (indexed_pulses_.full())
   {
@@ -286,6 +307,39 @@ uint32_t PowerSwitchController::arrayToChannels(ArduinoJson::JsonArray & channel
     channels |= bit << channel;
   }
   return channels;
+}
+
+void PowerSwitchController::setPower(const size_t channel_group,
+                                     const uint8_t power)
+{
+#if !defined(__AVR_ATmega2560__)
+  if (channel_group < constants::IC_COUNT)
+  {
+    uint8_t power_constrained = constrain(power,constants::power_min,
+                                          constants::power_max);
+    powers_[channel_group] = power_constrained;
+    long pwm_value = map(power_constrained,
+                         constants::power_min,
+                         constants::power_max,
+                         constants::power_pwm_value_min,
+                         constants::power_pwm_value_max);
+    analogWriteFrequency(constants::map_pins[channel_group],
+                         constants::power_pwm_frequency);
+    analogWriteResolution(constants::power_pwm_resolution);
+    analogWrite(constants::map_pins[channel_group],
+                pwm_value);
+  }
+#endif
+}
+
+uint8_t PowerSwitchController::getPower(const size_t channel_group)
+{
+  uint8_t power = 0;
+  if (channel_group < constants::IC_COUNT)
+  {
+    power = powers_[channel_group];
+  }
+  return power;
 }
 
 // Handlers must be non-blocking (avoid 'delay')
@@ -515,6 +569,31 @@ void PowerSwitchController::stopPwmHandler()
 void PowerSwitchController::stopAllPwmHandler()
 {
   stopAllPwm();
+}
+
+void PowerSwitchController::setPowerHandler()
+{
+  size_t channel_group;
+  modular_server_.parameter(constants::channel_group_parameter_name).getValue(channel_group);
+
+  size_t power;
+  modular_server_.parameter(constants::power_parameter_name).getValue(power);
+
+  setPower(channel_group,power);
+}
+
+void PowerSwitchController::getPowersHandler()
+{
+  modular_server_.response().writeResultKey();
+
+  modular_server_.response().beginArray();
+
+  for (size_t i=0; i<constants::IC_COUNT; ++i)
+  {
+    modular_server_.response().write(getPower(i));
+  }
+
+  modular_server_.response().endArray();
 }
 
 void PowerSwitchController::setChannelsOnHandler(int index)

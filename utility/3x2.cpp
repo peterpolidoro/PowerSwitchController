@@ -16,17 +16,20 @@ namespace constants
 {
 const modular_server::HardwareInfo hardware_info =
   {
-    .name_ptr=&hardware_name,
-    .part_number=1111,
-    .version_major=1,
-    .version_minor=1,
+   .name_ptr=&hardware_name,
+   .part_number=1111,
+   .version_major=1,
+   .version_minor=1,
   };
 
 const size_t cs_pin = 10;
 const size_t reset_pin = 2;
-const size_t pwm_pin = 3;
+const size_t in_pin = 5;
 
-const uint8_t ic_count = 1;
+const size_t map_pins[IC_COUNT] =
+  {
+   6,
+  };
 
 // Interrupts
 

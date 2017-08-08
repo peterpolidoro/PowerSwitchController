@@ -55,6 +55,10 @@ public:
 
   uint32_t arrayToChannels(ArduinoJson::JsonArray & channels_array);
 
+  void setPower(const size_t channel_group,
+                const uint8_t power);
+  uint8_t getPower(const size_t channel_group);
+
   // Handlers
   virtual void startPwmHandler(int index);
   virtual void stopPwmHandler(int index);
@@ -72,6 +76,8 @@ private:
   modular_server::Parameter parameters_[power_switch_controller::constants::PARAMETER_COUNT_MAX];
   modular_server::Function functions_[power_switch_controller::constants::FUNCTION_COUNT_MAX];
   modular_server::Callback callbacks_[power_switch_controller::constants::CALLBACK_COUNT_MAX];
+
+  uint8_t powers_[power_switch_controller::constants::IC_COUNT];
 
   // Handlers
   void setChannelOnHandler();
@@ -96,6 +102,8 @@ private:
   void startPwmHandler();
   void stopPwmHandler();
   void stopAllPwmHandler();
+  void setPowerHandler();
+  void getPowersHandler();
   void setChannelsOnHandler(int index);
   void setChannelsOffHandler(int index);
 

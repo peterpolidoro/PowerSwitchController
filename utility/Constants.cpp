@@ -20,7 +20,7 @@ const modular_server::FirmwareInfo firmware_info =
   {
     .name_ptr=&firmware_name,
     .version_major=2,
-    .version_minor=0,
+    .version_minor=1,
     .version_patch=0,
   };
 
@@ -28,10 +28,17 @@ CONSTANT_STRING(hardware_name,"power_switch_controller");
 
 const int bad_index = -1;
 
+// 15us ON + 15us OFF (1/30us) = 33333Hz = 333Hz @ 100 resolution
+const size_t power_pwm_frequency = 333;
+const size_t power_pwm_resolution = 8;
+const size_t power_pwm_value_min = 0;
+const size_t power_pwm_value_max = 255;
+
 // Interrupts
 
 // Units
-CONSTANT_STRING(ms_unit,"ms");
+CONSTANT_STRING(ms_units,"ms");
+CONSTANT_STRING(percent_units,"%");
 
 // Properties
 CONSTANT_STRING(states_property_name,"states");
@@ -62,6 +69,13 @@ const long count_max = 2000000000;
 
 CONSTANT_STRING(pwm_index_parameter_name,"pwm_index");
 
+CONSTANT_STRING(channel_group_parameter_name,"channel_group");
+const long channel_group_min = 0;
+
+CONSTANT_STRING(power_parameter_name,"power");
+const long power_min = 0;
+const long power_max = 100;
+
 // Functions
 CONSTANT_STRING(set_channel_on_function_name,"setChannelOn");
 CONSTANT_STRING(set_channel_off_function_name,"setChannelOff");
@@ -85,6 +99,8 @@ CONSTANT_STRING(add_pwm_function_name,"addPwm");
 CONSTANT_STRING(start_pwm_function_name,"startPwm");
 CONSTANT_STRING(stop_pwm_function_name,"stopPwm");
 CONSTANT_STRING(stop_all_pwm_function_name,"stopAllPwm");
+CONSTANT_STRING(set_power_function_name,"setPower");
+CONSTANT_STRING(get_powers_function_name,"getPowers");
 
 // Callbacks
 
