@@ -22,13 +22,14 @@ License:
 
 [power_switch_controller](https://github.com/janelia-modular-devices/power_switch_controller.git)
 
-## API
+## API NAMES
 
 ```json
 {
   "id":"getApi",
   "result":{
     "firmware":["PowerSwitchController"],
+    "verbosity":"NAMES",
     "functions":[
       "setChannelOn",
       "setChannelOff",
@@ -69,15 +70,14 @@ License:
     ],
     "properties":[
       "states"
-    ],
-    "callbacks":[]
+    ]
   }
 }
 ```
 
-## API Verbose
+## API GENERAL
 
-[API Verbose](./api.json)
+[API GENERAL](./api/)
 
 ## More Detailed Modular Device Information
 
