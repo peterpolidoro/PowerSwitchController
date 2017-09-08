@@ -24,9 +24,15 @@ const modular_server::HardwareInfo hardware_info =
 
 const size_t cs_pin = 46;
 const size_t reset_pin = 44;
-const size_t pwm_pin = 45;
+const size_t in_pin = 45;
 
-const uint8_t ic_count = 4;
+const size_t map_pins[IC_COUNT] =
+  {
+   6,
+   7,
+   8,
+   9,
+  };
 
 // Interrupts
 
@@ -60,9 +66,15 @@ const modular_server::HardwareInfo hardware_info =
 
 const size_t cs_pin = 46;
 const size_t reset_pin = 44;
-const size_t pwm_pin = 45;
+const size_t in_pin = 45;
 
-const uint8_t ic_count = 4;
+const size_t map_pins[IC_COUNT] =
+  {
+   6,
+   7,
+   8,
+   9,
+  };
 
 // Interrupts
 CONSTANT_STRING(bnc_b_interrupt_name,"bnc_b");

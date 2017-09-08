@@ -19,7 +19,10 @@ namespace constants
 //MAX values must be >= 1, >= created/copied count, < RAM limit
 enum{INTERRUPT_COUNT_MAX=1};
 
+enum {IC_COUNT=4};
 enum {CHANNEL_COUNT=32};
+
+extern const size_t map_pins[IC_COUNT];
 
 // Interrupts
 
@@ -47,7 +50,10 @@ namespace constants
 //MAX values must be >= 1, >= created/copied count, < RAM limit
 enum{INTERRUPT_COUNT_MAX=1};
 
+enum {IC_COUNT=4};
 enum {CHANNEL_COUNT=32};
+
+extern const size_t map_pins[IC_COUNT];
 
 // Interrupts
 extern ConstantString bnc_b_interrupt_name;
