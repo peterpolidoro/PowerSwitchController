@@ -5,7 +5,7 @@
 // Authors:
 // Peter Polidoro polidorop@janelia.hhmi.org
 // ----------------------------------------------------------------------------
-#include "PowerSwitchController.h"
+#include "../PowerSwitchController.h"
 
 
 using namespace power_switch_controller;
