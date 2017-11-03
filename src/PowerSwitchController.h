@@ -26,6 +26,8 @@
 #include <TLE72X.h>
 #include <EventController.h>
 
+#include <ModularClient.h>
+
 #include <ModularServer.h>
 #include <ModularDeviceBase.h>
 
