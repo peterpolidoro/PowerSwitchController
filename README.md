@@ -26,11 +26,13 @@ License:
 
 ```json
 {
-  "id":"getApi",
-  "result":{
-    "firmware":["PowerSwitchController"],
-    "verbosity":"NAMES",
-    "functions":[
+  "id": "getApi",
+  "result": {
+    "firmware": [
+      "PowerSwitchController"
+    ],
+    "verbosity": "NAMES",
+    "functions": [
       "setChannelOn",
       "setChannelOff",
       "setChannelsOn",
@@ -56,7 +58,7 @@ License:
       "setPower",
       "getPowers"
     ],
-    "parameters":[
+    "parameters": [
       "channel",
       "channels",
       "state",
@@ -68,7 +70,7 @@ License:
       "channel_group",
       "power"
     ],
-    "properties":[
+    "properties": [
       "states"
     ]
   }
