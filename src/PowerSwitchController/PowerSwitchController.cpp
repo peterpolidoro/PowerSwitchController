@@ -21,6 +21,9 @@ void PowerSwitchController::setup()
   ModularDeviceBase::setup();
   TLE72X::setup(constants::IC_COUNT);
 
+  // Reset Watchdog
+  resetWatchdog();
+
   // Event Controller Setup
   event_controller_.setup();
 

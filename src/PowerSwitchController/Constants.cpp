@@ -21,7 +21,7 @@ const modular_server::FirmwareInfo firmware_info =
     .name_ptr=&firmware_name,
     .version_major=2,
     .version_minor=1,
-    .version_patch=2,
+    .version_patch=3,
   };
 
 CONSTANT_STRING(hardware_name,"power_switch_controller");
