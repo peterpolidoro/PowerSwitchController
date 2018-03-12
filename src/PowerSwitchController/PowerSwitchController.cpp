@@ -354,6 +354,7 @@ uint8_t PowerSwitchController::getPower(const size_t channel_group)
 // const char *
 // ArduinoJson::JsonArray *
 // ArduinoJson::JsonObject *
+// const ConstantString *
 //
 // For more info read about ArduinoJson parsing https://github.com/janelia-arduino/ArduinoJson
 //
