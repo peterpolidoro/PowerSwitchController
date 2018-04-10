@@ -63,7 +63,7 @@ protected:
                    power_switch_controller::constants::INDEXED_PULSES_COUNT_MAX> indexed_pulses_;
 
 private:
-  modular_server::Interrupt interrupts_[power_switch_controller::constants::INTERRUPT_COUNT_MAX];
+  modular_server::Pin pins_[power_switch_controller::constants::PIN_COUNT_MAX];
 
   modular_server::Property properties_[power_switch_controller::constants::PROPERTY_COUNT_MAX];
   modular_server::Parameter parameters_[power_switch_controller::constants::PARAMETER_COUNT_MAX];

@@ -15,26 +15,26 @@ namespace power_switch_controller
 namespace constants
 {
 const modular_server::HardwareInfo hardware_info =
-  {
-    .name_ptr=&hardware_name,
-    .part_number=1110,
-    .version_major=1,
-    .version_minor=6,
-  };
+{
+  .name_ptr=&hardware_name,
+  .part_number=1110,
+  .version_major=1,
+  .version_minor=6,
+};
 
 const size_t cs_pin = 46;
 const size_t reset_pin = 44;
 const size_t in_pin = 45;
 
 const size_t map_pins[IC_COUNT] =
-  {
-   6,
-   7,
-   8,
-   9,
-  };
+{
+  6,
+  7,
+  8,
+  9,
+};
 
-// Interrupts
+// Pins
 
 // Units
 
@@ -57,27 +57,27 @@ namespace power_switch_controller
 namespace constants
 {
 const modular_server::HardwareInfo hardware_info =
-  {
-    .name_ptr=&hardware_name,
-    .part_number=1110,
-    .version_major=1,
-    .version_minor=6,
-  };
+{
+  .name_ptr=&hardware_name,
+  .part_number=1110,
+  .version_major=1,
+  .version_minor=6,
+};
 
 const size_t cs_pin = 46;
 const size_t reset_pin = 44;
 const size_t in_pin = 45;
 
 const size_t map_pins[IC_COUNT] =
-  {
-   6,
-   7,
-   8,
-   9,
-  };
+{
+  6,
+  7,
+  8,
+  9,
+};
 
-// Interrupts
-CONSTANT_STRING(bnc_b_interrupt_name,"bnc_b");
+// Pins
+CONSTANT_STRING(bnc_b_pin_name,"bnc_b");
 const size_t bnc_b_pin = 3;
 
 // Units

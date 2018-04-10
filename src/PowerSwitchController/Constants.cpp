@@ -34,7 +34,7 @@ const size_t power_pwm_resolution = 8;
 const size_t power_pwm_value_min = 0;
 const size_t power_pwm_value_max = 255;
 
-// Interrupts
+// Pins
 
 // Units
 CONSTANT_STRING(ms_units,"ms");

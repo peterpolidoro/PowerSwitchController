@@ -31,7 +31,7 @@ const size_t map_pins[IC_COUNT] =
    6,
   };
 
-// Interrupts
+// Pins
 
 // Units
 

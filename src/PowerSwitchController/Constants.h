@@ -52,7 +52,7 @@ extern const size_t power_pwm_resolution;
 extern const size_t power_pwm_value_min;
 extern const size_t power_pwm_value_max;
 
-// Interrupts
+// Pins
 
 // Units
 extern ConstantString ms_units;

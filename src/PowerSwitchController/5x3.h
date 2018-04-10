@@ -17,14 +17,14 @@ namespace power_switch_controller
 namespace constants
 {
 //MAX values must be >= 1, >= created/copied count, < RAM limit
-enum{INTERRUPT_COUNT_MAX=1};
+enum{PIN_COUNT_MAX=1};
 
 enum {IC_COUNT=4};
 enum {CHANNEL_COUNT=32};
 
 extern const size_t map_pins[IC_COUNT];
 
-// Interrupts
+// Pins
 
 // Units
 
@@ -48,15 +48,15 @@ namespace power_switch_controller
 namespace constants
 {
 //MAX values must be >= 1, >= created/copied count, < RAM limit
-enum{INTERRUPT_COUNT_MAX=1};
+enum{PIN_COUNT_MAX=1};
 
 enum {IC_COUNT=4};
 enum {CHANNEL_COUNT=32};
 
 extern const size_t map_pins[IC_COUNT];
 
-// Interrupts
-extern ConstantString bnc_b_interrupt_name;
+// Pins
+extern ConstantString bnc_b_pin_name;
 extern const size_t bnc_b_pin;
 
 // Units

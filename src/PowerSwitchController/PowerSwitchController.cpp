@@ -11,7 +11,7 @@
 using namespace power_switch_controller;
 
 PowerSwitchController::PowerSwitchController() :
-  TLE72X(constants::cs_pin,constants::reset_pin)
+TLE72X(constants::cs_pin,constants::reset_pin)
 {
 }
 
@@ -42,12 +42,12 @@ void PowerSwitchController::setup()
 
   // Add Hardware
   modular_server_.addHardware(constants::hardware_info,
-                              interrupts_);
+                              pins_);
 
-  // Interrupts
+  // Pins
 #if defined(__AVR_ATmega2560__)
-  modular_server::Interrupt & bnc_b_interrupt = modular_server_.createInterrupt(constants::bnc_b_interrupt_name,
-                                                                                constants::bnc_b_pin);
+  modular_server::Pin & bnc_b_pin = modular_server_.createPin(constants::bnc_b_pin_name,
+                                                              constants::bnc_b_pin);
 
 #endif
 
