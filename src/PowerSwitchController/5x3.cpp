@@ -77,8 +77,6 @@ const size_t map_pins[IC_COUNT] =
 };
 
 // Pins
-CONSTANT_STRING(bnc_b_pin_name,"bnc_b");
-const size_t bnc_b_pin = 3;
 
 // Units
 

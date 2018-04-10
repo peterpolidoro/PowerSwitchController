@@ -45,11 +45,6 @@ void PowerSwitchController::setup()
                               pins_);
 
   // Pins
-#if defined(__AVR_ATmega2560__)
-  modular_server::Pin & bnc_b_pin = modular_server_.createPin(constants::bnc_b_pin_name,
-                                                              constants::bnc_b_pin);
-
-#endif
 
   // Add Firmware
   modular_server_.addFirmware(constants::firmware_info,

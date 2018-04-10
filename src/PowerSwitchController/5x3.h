@@ -56,8 +56,6 @@ enum {CHANNEL_COUNT=32};
 extern const size_t map_pins[IC_COUNT];
 
 // Pins
-extern ConstantString bnc_b_pin_name;
-extern const size_t bnc_b_pin;
 
 // Units
 
