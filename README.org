@@ -3,86 +3,94 @@
 #+EMAIL: peterpolidoro@gmail.com
 
 * Library Information
-  - Author :: Peter Polidoro
+  - Name :: PowerSwitchController
+  - Version :: 2.1.3
   - License :: BSD
+  - URL :: https://github.com/janelia-arduino/PowerSwitchController
+  - Author :: Peter Polidoro
+  - Email :: peterpolidoro@gmail.com
+
+** Description
+
+   Modular device power switch controller library.
+
+* API NAMES
+
+  #+BEGIN_SRC js
+    {
+      "id": "getApi",
+      "result": {
+        "firmware": [
+          "PowerSwitchController"
+        ],
+        "verbosity": "NAMES",
+        "functions": [
+          "setChannelOn",
+          "setChannelOff",
+          "setChannelsOn",
+          "setChannelsOff",
+          "toggleChannel",
+          "toggleChannels",
+          "toggleAllChannels",
+          "setAllChannelsOn",
+          "setAllChannelsOff",
+          "setChannelOnAllOthersOff",
+          "setChannelOffAllOthersOn",
+          "setChannelsOnAllOthersOff",
+          "setChannelsOffAllOthersOn",
+          "getChannelsOn",
+          "getChannelsOff",
+          "getChannelCount",
+          "saveState",
+          "recallState",
+          "addPwm",
+          "startPwm",
+          "stopPwm",
+          "stopAllPwm",
+          "setPower",
+          "getPowers"
+        ],
+        "parameters": [
+          "channel",
+          "channels",
+          "state",
+          "delay",
+          "period",
+          "on_duration",
+          "count",
+          "pwm_index",
+          "channel_group",
+          "power"
+        ],
+        "properties": [
+          "states"
+        ]
+      }
+    }
+  #+END_SRC
+
+* API GENERAL
+
+  [[./api/]]
 
 * Ancestors
 
-  [[https://github.com/janelia-arduino/ModularServer][ModularServer]]
+  [[https://github.com/janelia-arduino/ModularServer]]
 
-  [[https://github.com/janelia-arduino/ModularDeviceBase][ModularDeviceBase]]
+  [[https://github.com/janelia-arduino/ModularDeviceBase]]
 
 * Clients
 
 * Devices
 
-  [[https://github.com/janelia-modular-devices/modular_device_base.git][modular_device_base]]
+  [[https://github.com/janelia-modular-devices/modular_device_base.git]]
 
-  [[https://github.com/janelia-modular-devices/power_switch_controller.git][power_switch_controller]]
-
-* API NAMES
-
-  #+BEGIN_SRC js
-{
-  "id": "getApi",
-  "result": {
-    "firmware": [
-      "PowerSwitchController"
-    ],
-    "verbosity": "NAMES",
-    "functions": [
-      "setChannelOn",
-      "setChannelOff",
-      "setChannelsOn",
-      "setChannelsOff",
-      "toggleChannel",
-      "toggleChannels",
-      "toggleAllChannels",
-      "setAllChannelsOn",
-      "setAllChannelsOff",
-      "setChannelOnAllOthersOff",
-      "setChannelOffAllOthersOn",
-      "setChannelsOnAllOthersOff",
-      "setChannelsOffAllOthersOn",
-      "getChannelsOn",
-      "getChannelsOff",
-      "getChannelCount",
-      "saveState",
-      "recallState",
-      "addPwm",
-      "startPwm",
-      "stopPwm",
-      "stopAllPwm",
-      "setPower",
-      "getPowers"
-    ],
-    "parameters": [
-      "channel",
-      "channels",
-      "state",
-      "delay",
-      "period",
-      "on_duration",
-      "count",
-      "pwm_index",
-      "channel_group",
-      "power"
-    ],
-    "properties": [
-      "states"
-    ]
-  }
-}
-  #+END_SRC
-
-* API GENERAL
-
-  [[./api/][API GENERAL]]
+  [[https://github.com/janelia-modular-devices/power_switch_controller.git]]
 
 * More Detailed Modular Device Information
 
-  [[https://github.com/janelia-modular-devices/modular-devices][modular-devices]]
+  [[https://github.com/janelia-modular-devices/modular-devices]]
 
-* Library Dependencies
+* Installation Instructions
 
-  [[https://github.com/janelia-arduino/arduino-libraries][arduino-libraries]]
+  [[https://github.com/janelia-arduino/arduino-libraries]]
