@@ -35,21 +35,21 @@ public:
   void recallState(const size_t state);
 
   int addPwm(const uint32_t channels,
-             const long delay,
-             const long period,
-             const long on_duration,
-             const long count);
+    const long delay,
+    const long period,
+    const long on_duration,
+    const long count);
   int startPwm(const uint32_t channels,
-               const long delay,
-               const long period,
-               const long on_duration);
+    const long delay,
+    const long period,
+    const long on_duration);
   void stopPwm(const int pwm_index);
   void stopAllPwm();
 
   uint32_t arrayToChannels(ArduinoJson::JsonArray & channels_array);
 
   void setPower(const size_t channel_group,
-                const uint8_t power);
+    const uint8_t power);
   uint8_t getPower(const size_t channel_group);
 
   // Handlers
@@ -60,7 +60,7 @@ protected:
   EventController<power_switch_controller::constants::EVENT_COUNT_MAX> event_controller_;
 
   IndexedContainer<power_switch_controller::constants::PulseInfo,
-                   power_switch_controller::constants::INDEXED_PULSES_COUNT_MAX> indexed_pulses_;
+    power_switch_controller::constants::INDEXED_PULSES_COUNT_MAX> indexed_pulses_;
 
 private:
   modular_server::Pin pins_[power_switch_controller::constants::PIN_COUNT_MAX];

@@ -17,12 +17,12 @@ CONSTANT_STRING(device_name,"power_switch_controller");
 CONSTANT_STRING(firmware_name,"PowerSwitchController");
 // Use semantic versioning http://semver.org/
 const modular_server::FirmwareInfo firmware_info =
-  {
-    .name_ptr=&firmware_name,
-    .version_major=2,
-    .version_minor=1,
-    .version_patch=3,
-  };
+{
+  .name_ptr=&firmware_name,
+  .version_major=2,
+  .version_minor=1,
+  .version_patch=3,
+};
 
 CONSTANT_STRING(hardware_name,"power_switch_controller");
 

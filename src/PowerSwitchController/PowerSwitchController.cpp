@@ -42,16 +42,16 @@ void PowerSwitchController::setup()
 
   // Add Hardware
   modular_server_.addHardware(constants::hardware_info,
-                              pins_);
+    pins_);
 
   // Pins
 
   // Add Firmware
   modular_server_.addFirmware(constants::firmware_info,
-                              properties_,
-                              parameters_,
-                              functions_,
-                              callbacks_);
+    properties_,
+    parameters_,
+    functions_,
+    callbacks_);
   // Properties
   modular_server_.createProperty(constants::states_property_name,constants::states_array_default);
 
@@ -221,10 +221,10 @@ void PowerSwitchController::recallState(const size_t state)
 }
 
 int PowerSwitchController::addPwm(const uint32_t channels,
-                                  const long delay,
-                                  const long period,
-                                  const long on_duration,
-                                  const long count)
+  const long delay,
+  const long period,
+  const long on_duration,
+  const long count)
 {
   if (indexed_pulses_.full())
   {
@@ -234,12 +234,12 @@ int PowerSwitchController::addPwm(const uint32_t channels,
   pulse_info.channels = channels;
   int index = indexed_pulses_.add(pulse_info);
   EventIdPair event_id_pair = event_controller_.addPwmUsingDelay(makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOnHandler),
-                                                                 makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOffHandler),
-                                                                 delay,
-                                                                 period,
-                                                                 on_duration,
-                                                                 count,
-                                                                 index);
+    makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOffHandler),
+    delay,
+    period,
+    on_duration,
+    count,
+    index);
   event_controller_.addStartFunctor(event_id_pair,makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::startPwmHandler));
   event_controller_.addStopFunctor(event_id_pair,makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::stopPwmHandler));
   indexed_pulses_[index].event_id_pair = event_id_pair;
@@ -248,9 +248,9 @@ int PowerSwitchController::addPwm(const uint32_t channels,
 }
 
 int PowerSwitchController::startPwm(const uint32_t channels,
-                                    const long delay,
-                                    const long period,
-                                    const long on_duration)
+  const long delay,
+  const long period,
+  const long on_duration)
 {
   if (indexed_pulses_.full())
   {
@@ -260,11 +260,11 @@ int PowerSwitchController::startPwm(const uint32_t channels,
   pulse_info.channels = channels;
   int index = indexed_pulses_.add(pulse_info);
   EventIdPair event_id_pair = event_controller_.addInfinitePwmUsingDelay(makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOnHandler),
-                                                                         makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOffHandler),
-                                                                         delay,
-                                                                         period,
-                                                                         on_duration,
-                                                                         index);
+    makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::setChannelsOffHandler),
+    delay,
+    period,
+    on_duration,
+    index);
   event_controller_.addStartFunctor(event_id_pair,makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::startPwmHandler));
   event_controller_.addStopFunctor(event_id_pair,makeFunctor((Functor1<int> *)0,*this,&PowerSwitchController::stopPwmHandler));
   indexed_pulses_[index].event_id_pair = event_id_pair;
@@ -308,24 +308,24 @@ uint32_t PowerSwitchController::arrayToChannels(ArduinoJson::JsonArray & channel
 }
 
 void PowerSwitchController::setPower(const size_t channel_group,
-                                     const uint8_t power)
+  const uint8_t power)
 {
 #if !defined(__AVR_ATmega2560__)
   if (channel_group < constants::IC_COUNT)
   {
     uint8_t power_constrained = constrain(power,constants::power_min,
-                                          constants::power_max);
+      constants::power_max);
     powers_[channel_group] = power_constrained;
     long pwm_value = map(power_constrained,
-                         constants::power_min,
-                         constants::power_max,
-                         constants::power_pwm_value_min,
-                         constants::power_pwm_value_max);
+      constants::power_min,
+      constants::power_max,
+      constants::power_pwm_value_min,
+      constants::power_pwm_value_max);
     analogWriteFrequency(constants::map_pins[channel_group],
-                         constants::power_pwm_frequency);
+      constants::power_pwm_frequency);
     analogWriteResolution(constants::power_pwm_resolution);
     analogWrite(constants::map_pins[channel_group],
-                pwm_value);
+      pwm_value);
   }
 #endif
 }
