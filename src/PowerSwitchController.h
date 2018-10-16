@@ -31,26 +31,26 @@ public:
   PowerSwitchController();
   virtual void setup();
 
-  void saveState(const size_t state);
-  void recallState(const size_t state);
+  void saveState(size_t state);
+  void recallState(size_t state);
 
-  int addPwm(const uint32_t channels,
-    const long delay,
-    const long period,
-    const long on_duration,
-    const long count);
-  int startPwm(const uint32_t channels,
-    const long delay,
-    const long period,
-    const long on_duration);
-  void stopPwm(const int pwm_index);
+  int addPwm(uint32_t channels,
+    long delay,
+    long period,
+    long on_duration,
+    long count);
+  int startPwm(uint32_t channels,
+    long delay,
+    long period,
+    long on_duration);
+  void stopPwm(int pwm_index);
   void stopAllPwm();
 
   uint32_t arrayToChannels(ArduinoJson::JsonArray & channels_array);
 
-  void setPower(const size_t channel_group,
-    const uint8_t power);
-  uint8_t getPower(const size_t channel_group);
+  void setPower(size_t channel_group,
+    uint8_t power);
+  uint8_t getPower(size_t channel_group);
 
   // Handlers
   virtual void startPwmHandler(int index);

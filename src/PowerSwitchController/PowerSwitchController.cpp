@@ -199,7 +199,7 @@ void PowerSwitchController::setup()
 
 }
 
-void PowerSwitchController::saveState(const size_t state)
+void PowerSwitchController::saveState(size_t state)
 {
   if (state >= constants::STATE_COUNT)
   {
@@ -209,7 +209,7 @@ void PowerSwitchController::saveState(const size_t state)
   modular_server_.property(constants::states_property_name).setElementValue(state,channels);
 }
 
-void PowerSwitchController::recallState(const size_t state)
+void PowerSwitchController::recallState(size_t state)
 {
   if (state >= constants::STATE_COUNT)
   {
@@ -220,11 +220,11 @@ void PowerSwitchController::recallState(const size_t state)
   setChannels(channels);
 }
 
-int PowerSwitchController::addPwm(const uint32_t channels,
-  const long delay,
-  const long period,
-  const long on_duration,
-  const long count)
+int PowerSwitchController::addPwm(uint32_t channels,
+  long delay,
+  long period,
+  long on_duration,
+  long count)
 {
   if (indexed_pulses_.full())
   {
@@ -247,10 +247,10 @@ int PowerSwitchController::addPwm(const uint32_t channels,
   return index;
 }
 
-int PowerSwitchController::startPwm(const uint32_t channels,
-  const long delay,
-  const long period,
-  const long on_duration)
+int PowerSwitchController::startPwm(uint32_t channels,
+  long delay,
+  long period,
+  long on_duration)
 {
   if (indexed_pulses_.full())
   {
@@ -272,7 +272,7 @@ int PowerSwitchController::startPwm(const uint32_t channels,
   return index;
 }
 
-void PowerSwitchController::stopPwm(const int pwm_index)
+void PowerSwitchController::stopPwm(int pwm_index)
 {
   if (pwm_index < 0)
   {
@@ -307,8 +307,8 @@ uint32_t PowerSwitchController::arrayToChannels(ArduinoJson::JsonArray & channel
   return channels;
 }
 
-void PowerSwitchController::setPower(const size_t channel_group,
-  const uint8_t power)
+void PowerSwitchController::setPower(size_t channel_group,
+  uint8_t power)
 {
 #if !defined(__AVR_ATmega2560__)
   if (channel_group < constants::IC_COUNT)
@@ -330,7 +330,7 @@ void PowerSwitchController::setPower(const size_t channel_group,
 #endif
 }
 
-uint8_t PowerSwitchController::getPower(const size_t channel_group)
+uint8_t PowerSwitchController::getPower(size_t channel_group)
 {
   uint8_t power = 0;
   if (channel_group < constants::IC_COUNT)
