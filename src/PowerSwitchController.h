@@ -46,7 +46,7 @@ public:
   void stopPwm(int pwm_index);
   void stopAllPwm();
 
-  uint32_t arrayToChannels(ArduinoJson::JsonArray & channels_array);
+  uint32_t arrayToChannels(ArduinoJson::JsonArray channels_array);
 
   void setPower(size_t channel_group,
     uint8_t power);

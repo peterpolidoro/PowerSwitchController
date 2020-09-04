@@ -293,15 +293,12 @@ void PowerSwitchController::stopAllPwm()
   }
 }
 
-uint32_t PowerSwitchController::arrayToChannels(ArduinoJson::JsonArray & channels_array)
+uint32_t PowerSwitchController::arrayToChannels(ArduinoJson::JsonArray channels_array)
 {
   uint32_t channels = 0;
   uint32_t bit = 1;
-  for (ArduinoJson::JsonArray::iterator channels_it=channels_array.begin();
-       channels_it != channels_array.end();
-       ++channels_it)
+  for (long channel : channels_array)
   {
-    long channel = *channels_it;
     channels |= bit << channel;
   }
   return channels;
@@ -347,8 +344,8 @@ uint8_t PowerSwitchController::getPower(size_t channel_group)
 // floating-point number (float, double)
 // bool
 // const char *
-// ArduinoJson::JsonArray *
-// ArduinoJson::JsonObject *
+// ArduinoJson::JsonArray
+// ArduinoJson::JsonObject
 // const ConstantString *
 //
 // For more info read about ArduinoJson parsing https://github.com/janelia-arduino/ArduinoJson
@@ -385,17 +382,17 @@ void PowerSwitchController::setChannelOffHandler()
 
 void PowerSwitchController::setChannelsOnHandler()
 {
-  ArduinoJson::JsonArray * channels_array_ptr;
-  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
-  const uint32_t channels = arrayToChannels(*channels_array_ptr);
+  ArduinoJson::JsonArray channels_array;
+  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array);
+  const uint32_t channels = arrayToChannels(channels_array);
   setChannelsOn(channels);
 }
 
 void PowerSwitchController::setChannelsOffHandler()
 {
-  ArduinoJson::JsonArray * channels_array_ptr;
-  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
-  const uint32_t channels = arrayToChannels(*channels_array_ptr);
+  ArduinoJson::JsonArray channels_array;
+  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array);
+  const uint32_t channels = arrayToChannels(channels_array);
   setChannelsOff(channels);
 }
 
@@ -408,9 +405,9 @@ void PowerSwitchController::toggleChannelHandler()
 
 void PowerSwitchController::toggleChannelsHandler()
 {
-  ArduinoJson::JsonArray * channels_array_ptr;
-  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
-  const uint32_t channels = arrayToChannels(*channels_array_ptr);
+  ArduinoJson::JsonArray channels_array;
+  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array);
+  const uint32_t channels = arrayToChannels(channels_array);
   toggleChannels(channels);
 }
 
@@ -445,17 +442,17 @@ void PowerSwitchController::setChannelOffAllOthersOnHandler()
 
 void PowerSwitchController::setChannelsOnAllOthersOffHandler()
 {
-  ArduinoJson::JsonArray * channels_array_ptr;
-  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
-  const uint32_t channels = arrayToChannels(*channels_array_ptr);
+  ArduinoJson::JsonArray channels_array;
+  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array);
+  const uint32_t channels = arrayToChannels(channels_array);
   setChannelsOnAllOthersOff(channels);
 }
 
 void PowerSwitchController::setChannelsOffAllOthersOnHandler()
 {
-  ArduinoJson::JsonArray * channels_array_ptr;
-  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
-  const uint32_t channels = arrayToChannels(*channels_array_ptr);
+  ArduinoJson::JsonArray channels_array;
+  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array);
+  const uint32_t channels = arrayToChannels(channels_array);
   setChannelsOffAllOthersOn(channels);
 }
 
@@ -514,8 +511,8 @@ void PowerSwitchController::recallStateHandler()
 
 void PowerSwitchController::addPwmHandler()
 {
-  ArduinoJson::JsonArray * channels_array_ptr;
-  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
+  ArduinoJson::JsonArray channels_array;
+  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array);
   long delay;
   modular_server_.parameter(constants::delay_parameter_name).getValue(delay);
   long period;
@@ -524,7 +521,7 @@ void PowerSwitchController::addPwmHandler()
   modular_server_.parameter(constants::on_duration_parameter_name).getValue(on_duration);
   long count;
   modular_server_.parameter(constants::count_parameter_name).getValue(count);
-  const uint32_t channels = arrayToChannels(*channels_array_ptr);
+  const uint32_t channels = arrayToChannels(channels_array);
   int index = addPwm(channels,delay,period,on_duration,count);
   if (index >= 0)
   {
@@ -538,15 +535,15 @@ void PowerSwitchController::addPwmHandler()
 
 void PowerSwitchController::startPwmHandler()
 {
-  ArduinoJson::JsonArray * channels_array_ptr;
-  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array_ptr);
+  ArduinoJson::JsonArray channels_array;
+  modular_server_.parameter(constants::channels_parameter_name).getValue(channels_array);
   long delay;
   modular_server_.parameter(constants::delay_parameter_name).getValue(delay);
   long period;
   modular_server_.parameter(constants::period_parameter_name).getValue(period);
   long on_duration;
   modular_server_.parameter(constants::on_duration_parameter_name).getValue(on_duration);
-  const uint32_t channels = arrayToChannels(*channels_array_ptr);
+  const uint32_t channels = arrayToChannels(channels_array);
   int index = startPwm(channels,delay,period,on_duration);
   if (index >= 0)
   {
