@@ -3,7 +3,7 @@
 //
 //
 // Authors:
-// Peter Polidoro peterpolidoro@gmail.com
+// Peter Polidoro peter@polidoro.io
 // ----------------------------------------------------------------------------
 #ifndef POWER_SWITCH_CONTROLLER_CONSTANTS_H
 #define POWER_SWITCH_CONTROLLER_CONSTANTS_H
