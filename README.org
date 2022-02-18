@@ -3,94 +3,46 @@
 #+EMAIL: peter@polidoro.io
 
 * Library Information
-  - Name :: PowerSwitchController
-  - Version :: 3.0.0
-  - License :: BSD
-  - URL :: https://github.com/janelia-arduino/PowerSwitchController
-  - Author :: Peter Polidoro
-  - Email :: peter@polidoro.io
+- Name :: PowerSwitchController
+- Version :: 4.0.0
+- License :: BSD
+- URL :: https://github.com/janelia-arduino/PowerSwitchController
+- Author :: Peter Polidoro
+- Email :: peter@polidoro.io
 
 ** Description
 
-   Modular device power switch controller library.
+Modular device power switch controller library.
 
 * API NAMES
 
-  #+BEGIN_SRC js
-    {
-      "id": "getApi",
-      "result": {
-        "firmware": [
-          "PowerSwitchController"
-        ],
-        "verbosity": "NAMES",
-        "functions": [
-          "setChannelOn",
-          "setChannelOff",
-          "setChannelsOn",
-          "setChannelsOff",
-          "toggleChannel",
-          "toggleChannels",
-          "toggleAllChannels",
-          "setAllChannelsOn",
-          "setAllChannelsOff",
-          "setChannelOnAllOthersOff",
-          "setChannelOffAllOthersOn",
-          "setChannelsOnAllOthersOff",
-          "setChannelsOffAllOthersOn",
-          "getChannelsOn",
-          "getChannelsOff",
-          "getChannelCount",
-          "saveState",
-          "recallState",
-          "addPwm",
-          "startPwm",
-          "stopPwm",
-          "stopAllPwm",
-          "setPower",
-          "getPowers"
-        ],
-        "parameters": [
-          "channel",
-          "channels",
-          "state",
-          "delay",
-          "period",
-          "on_duration",
-          "count",
-          "pwm_index",
-          "channel_group",
-          "power"
-        ],
-        "properties": [
-          "states"
-        ]
-      }
-    }
-  #+END_SRC
+#+BEGIN_SRC js
+
+
+#+END_SRC
 
 * API GENERAL
 
-  [[./api/]]
+[[./api/]]
 
 * Ancestors
 
-  [[https://github.com/janelia-arduino/ModularServer]]
+[[https://github.com/janelia-arduino/ModularServer]]
 
-  [[https://github.com/janelia-arduino/ModularDeviceBase]]
+[[https://github.com/janelia-arduino/ModularDeviceBase]]
 
 * Clients
 
 * Devices
 
-  [[https://github.com/janelia-modular-devices/modular_device_base]]
+[[https://github.com/janelia-modular-devices/modular_device_base]]
 
-  [[https://github.com/janelia-modular-devices/power_switch_controller]]
+[[https://github.com/janelia-modular-devices/power_switch_controller]]
 
 * More Detailed Modular Device Information
 
-  [[https://github.com/janelia-modular-devices/modular-devices]]
+[[https://github.com/janelia-modular-devices/modular-devices]]
 
 * Installation Instructions
 
-  [[https://github.com/janelia-arduino/arduino-libraries]]
+[[https://github.com/janelia-arduino/arduino-libraries]]
