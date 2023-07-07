@@ -4,7 +4,7 @@
 
 * Library Information
 - Name :: PowerSwitchController
-- Version :: 3.1.0
+- Version :: 4.0.1
 - License :: BSD
 - URL :: https://github.com/janelia-arduino/PowerSwitchController
 - Author :: Peter Polidoro
@@ -27,7 +27,7 @@ Modular device power switch controller library.
     "firmware": [
       {
         "name": "PowerSwitchController",
-        "version": "3.1.0"
+        "version": "4.0.1"
       }
     ],
     "verbosity": "NAMES",
