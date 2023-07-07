@@ -4,7 +4,7 @@
 
 * Library Information
 - Name :: PowerSwitchController
-- Version :: 4.0.0
+- Version :: 3.1.0
 - License :: BSD
 - URL :: https://github.com/janelia-arduino/PowerSwitchController
 - Author :: Peter Polidoro
@@ -17,8 +17,63 @@ Modular device power switch controller library.
 * API NAMES
 
 #+BEGIN_SRC js
-
-
+{
+  "id": "getApi",
+  "result": {
+    "ancestors": [
+      "ModularServer",
+      "ModularDeviceBase"
+    ],
+    "firmware": [
+      {
+        "name": "PowerSwitchController",
+        "version": "3.1.0"
+      }
+    ],
+    "verbosity": "NAMES",
+    "functions": [
+      "setChannelOn",
+      "setChannelOff",
+      "setChannelsOn",
+      "setChannelsOff",
+      "toggleChannel",
+      "toggleChannels",
+      "toggleAllChannels",
+      "setAllChannelsOn",
+      "setAllChannelsOff",
+      "setChannelOnAllOthersOff",
+      "setChannelOffAllOthersOn",
+      "setChannelsOnAllOthersOff",
+      "setChannelsOffAllOthersOn",
+      "getChannelsOn",
+      "getChannelsOff",
+      "getChannelCount",
+      "saveState",
+      "recallState",
+      "addPwm",
+      "startPwm",
+      "stopPwm",
+      "stopAllPwm",
+      "setPower",
+      "getPowers"
+    ],
+    "parameters": [
+      "channel",
+      "channels",
+      "state",
+      "delay",
+      "period",
+      "on_duration",
+      "count",
+      "pwm_index",
+      "channel_group",
+      "power"
+    ],
+    "properties": [
+      "states"
+    ]
+  }
+}
 #+END_SRC
 
 * API GENERAL

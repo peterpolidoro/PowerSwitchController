@@ -129,4 +129,6 @@ extern ConstantString pwm_error;
 }
 #include "5x3.h"
 #include "3x2.h"
+#include "TEENSY40.h"
+#include "TEENSY41.h"
 #endif
